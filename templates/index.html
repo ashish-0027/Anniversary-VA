@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anjali &amp; Vikas – Silver Jubilee</title>
+  <style>
+    @import "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Dancing+Script:wght@400;500;600;700&display=swap";
+
+    :root{--black:#0a0705;--brown:#1a1510;--gold:#c9a84c;--gold-light:#f0d080;--cream:#f5ead0}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--black);color:var(--cream);cursor:none;font-family:'Cormorant Garamond',serif;overflow-x:hidden}
+    body::before{content:"";opacity:.025;pointer-events:none;z-index:1000;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");position:fixed;inset:0}
+
+    /* CURSOR */
+    .cursor-dot{background:var(--gold);pointer-events:none;z-index:9999;border-radius:50%;width:6px;height:6px;position:fixed;transform:translate(-50%,-50%)}
+    .cursor-ring{border:1px solid var(--gold);pointer-events:none;z-index:9998;mix-blend-mode:difference;border-radius:50%;width:32px;height:32px;position:fixed;transform:translate(-50%,-50%)}
+
+    /* LOADER */
+    .loader{background:var(--black);z-index:10000;flex-direction:column;justify-content:center;align-items:center;transition:opacity .8s;display:flex;position:fixed;inset:0}
+    .loader.hidden{opacity:0;pointer-events:none}
+    .loader-number{color:var(--gold);font-family:'Cinzel',serif;font-size:max(80px,min(15vw,150px));font-weight:600;animation:1s forwards fadeSlideUp}
+    .loader-text{color:var(--gold);letter-spacing:8px;opacity:0;margin-top:10px;font-family:'Cinzel',serif;font-size:max(12px,min(2vw,18px));animation:1s .3s forwards fadeSlideUp}
+    .loader-bar{background:#c9a84c33;width:200px;height:2px;margin-top:40px;overflow:hidden}
+    .loader-bar-fill{background:var(--gold);height:100%;animation:2.2s forwards loadProgress}
+    @keyframes fadeSlideUp{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes loadProgress{0%{width:0%}to{width:100%}}
+
+    /* ENVELOPE */
+    .envelope-screen{z-index:9000;background:radial-gradient(#1a1510 0%,#0a0705 100%);justify-content:center;align-items:center;transition:opacity .8s;display:flex;position:fixed;inset:0}
+    .envelope-screen.hidden{opacity:0;pointer-events:none}
+    .envelope{cursor:pointer;perspective:1000px;width:max(300px,min(85vw,480px));height:max(220px,min(65vw,340px));position:relative}
+    .envelope-body{background:linear-gradient(#d4c4a0 0%,#c8b78c 50%,#baa77a 100%);border-radius:4px;width:100%;height:100%;position:absolute;box-shadow:0 15px 50px #00000080,inset 0 0 30px #0000001a}
+    .envelope-bottom{clip-path:polygon(0 100%,100% 100%,50% 0%);z-index:1;background:linear-gradient(#d4c4a0 0%,#c8b78c 100%);width:100%;height:45%;position:absolute;bottom:0;left:0}
+    .envelope-flap{clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;z-index:5;background:linear-gradient(#9a8555 0%,#b69d5e 40%,#c8ad68 100%);width:100%;height:55%;transition:transform 1s cubic-bezier(.4,0,.2,1);position:absolute;top:0;left:0;box-shadow:0 5px 15px #0003}
+    .envelope.open .envelope-flap{transform:rotateX(180deg)}
+    .envelope-seal{z-index:6;background:radial-gradient(circle at 30% 30%,#e8d68c 0%,#c9a84c 40%,#9a7b2e 100%);border-radius:50%;flex-direction:column;justify-content:center;align-items:center;width:75px;height:75px;transition:opacity .5s,transform .5s;display:flex;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 4px 15px #0006,inset 0 2px 4px #ffffff4d}
+    .envelope.open .envelope-seal{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+    .seal-number{color:#3d3420;font-family:'Cinzel',serif;font-size:24px;font-weight:700;line-height:1}
+    .seal-text{color:#3d3420;letter-spacing:2px;margin-top:2px;font-family:'Cinzel',serif;font-size:9px}
+    .envelope-letter{z-index:2;background:linear-gradient(#e8dcc0 0%,#ddd0b0 100%);border-radius:2px;flex-direction:column;justify-content:center;align-items:center;width:88%;height:75%;padding:20px;transition:transform 1.2s cubic-bezier(.34,1.56,.64,1) .3s;display:flex;position:absolute;top:10%;left:50%;transform:translate(-50%)}
+    .letter-names{color:#4a4035;text-align:center;letter-spacing:4px;font-family:'Cinzel',serif;font-size:max(20px,min(5vw,32px));font-weight:600}
+    .letter-subtitle{color:#8b7355;margin-top:8px;font-family:'Cormorant Garamond',serif;font-size:max(12px,min(3vw,16px));font-style:italic}
+    .letter-date{color:#9a8866;letter-spacing:1px;margin-top:12px;font-family:'Cormorant Garamond',serif;font-size:max(10px,min(2.5vw,14px))}
+    .envelope-hint{color:var(--gold);letter-spacing:2px;font-family:'Cormorant Garamond',serif;font-size:14px;animation:2s infinite pulse;position:absolute;bottom:-50px;left:50%;transform:translate(-50%)}
+    @keyframes pulse{0%,to{opacity:.5}50%{opacity:1}}
+
+    /* MAIN */
+    .main-content{opacity:0;min-height:100vh;transition:opacity 1s}
+    .main-content.visible{opacity:1}
+    .particles-canvas{pointer-events:none;z-index:1;position:fixed;inset:0}
+
+    /* SCROLL ARROW */
+    .scroll-arrow{z-index:100;cursor:pointer;transition:opacity .3s;animation:1.4s infinite bounce;position:fixed;bottom:30px;left:50%;transform:translate(-50%)}
+    .scroll-arrow.hidden{opacity:0;pointer-events:none}
+    .scroll-arrow svg{width:50px;height:50px;animation:1.4s infinite growArrow}
+    @keyframes bounce{0%,to{transform:translate(-50%) translateY(0)}50%{transform:translate(-50%) translateY(8px)}}
+    @keyframes growArrow{0%,to{transform:scale(1)}50%{transform:scale(1.15)}}
+
+    /* SCROLL REVEAL */
+    .scroll-reveal{opacity:0;transition:opacity .8s,transform .8s;transform:translateY(36px)}
+    .scroll-reveal.revealed{opacity:1;transform:translateY(0)}
+
+    /* SECTION HEADING */
+    .section-heading{text-align:center;padding:60px 20px 30px}
+    .section-heading-text{color:var(--gold);letter-spacing:6px;text-transform:uppercase;font-family:'Cinzel',serif;font-size:max(14px,min(3vw,18px))}
+    .section-heading-large{color:var(--cream);letter-spacing:4px;margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:max(32px,min(7vw,60px));font-weight:400}
+
+    /* HERO */
+    .hero{text-align:center;background:radial-gradient(#c9a84c0d 0%,#0000 70%);flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:40px 20px;display:flex;position:relative}
+    .hero-label{color:var(--gold);letter-spacing:6px;opacity:0;margin-bottom:30px;font-family:'Cinzel',serif;font-size:max(11px,min(2vw,14px));animation:1s .2s forwards fadeSlideUp}
+    .hero-names{flex-direction:column;align-items:center;gap:0;display:flex}
+    .hero-name{color:var(--cream);opacity:0;font-family:'Cinzel',serif;font-size:max(34px,min(9vw,60px));font-weight:600;line-height:1.1;animation:1s forwards fadeSlideUp}
+    .hero-name:first-child{animation-delay:.3s}
+    .hero-name:last-child{animation-delay:.5s}
+    .hero-ampersand{color:var(--gold);opacity:0;font-family:'Dancing Script',cursive;font-size:max(45px,min(11vw,80px));line-height:.8;animation:1s .4s forwards fadeSlideUp}
+    .hero-subtitle{color:var(--gold-light);opacity:0;margin-top:20px;font-family:'Cormorant Garamond',serif;font-size:max(18px,min(4vw,28px));font-style:italic;animation:1s .6s forwards fadeSlideUp}
+    .hero-divider{opacity:0;align-items:center;gap:15px;margin:30px 0;animation:1s .7s forwards fadeSlideUp;display:flex}
+    .hero-divider-line{background:var(--gold);width:60px;height:1px}
+    .hero-divider-diamond{color:var(--gold);font-size:12px}
+    .hero-date{color:var(--gold);letter-spacing:4px;opacity:0;font-family:'Cinzel',serif;font-size:max(12px,min(2.5vw,16px));animation:1s .8s forwards fadeSlideUp}
+    .hero-tagline{color:var(--cream);opacity:0;max-width:600px;margin-top:25px;font-family:'Cormorant Garamond',serif;font-size:max(16px,min(3vw,22px));font-style:italic;line-height:1.6;animation:1s .9s forwards fadeSlideUp}
+
+    /* COUNTDOWN */
+    .countdown-section{padding:60px 20px 80px;position:relative;overflow:hidden}
+    .countdown-watermark{color:var(--gold);opacity:.03;pointer-events:none;font-family:'Cinzel',serif;font-size:35vw;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .countdown-container{z-index:2;justify-content:center;gap:max(20px,min(5vw,50px));display:flex;position:relative}
+    .countdown-item{text-align:center}
+    .countdown-number{color:var(--gold);border-bottom:2px solid var(--gold);padding-bottom:10px;font-family:'Cinzel',serif;font-size:max(40px,min(10vw,90px));font-weight:600;line-height:1}
+    .countdown-label{color:var(--cream);letter-spacing:3px;margin-top:12px;font-family:'Cinzel',serif;font-size:max(9px,min(1.8vw,14px))}
+
+    /* COLLAGE */
+    .collage-section{padding:0}
+    .collage-grid{grid-template-rows:280px 280px;grid-template-columns:repeat(4,1fr);gap:0;display:grid}
+    .collage-item{position:relative;overflow:hidden;background:#1a1510}
+    .collage-item img{object-fit:cover;width:100%;height:100%;transition:transform .5s}
+    .collage-item:hover img{transform:scale(1.06)}
+    .collage-item:first-child{grid-area:1/1/3}
+    .collage-item:nth-child(2){grid-area:1/2}
+    .collage-item:nth-child(3){grid-area:1/3}
+    .collage-item:nth-child(4){grid-area:1/4}
+    .collage-item:nth-child(5){grid-area:2/2}
+    .collage-item:nth-child(6){grid-area:2/3}
+    .collage-item:nth-child(7){grid-area:2/4}
+    .collage-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#c9a84c55;font-family:'Cinzel',serif;font-size:11px;letter-spacing:3px}
+    .collage-placeholder svg{opacity:.25}
+    @media (max-width:768px){
+      .collage-grid{grid-template-rows:repeat(4,200px);grid-template-columns:repeat(2,1fr)}
+      .collage-item:first-child{grid-area:1/1}
+      .collage-item:nth-child(2){grid-area:1/2}
+      .collage-item:nth-child(3){grid-area:2/1}
+      .collage-item:nth-child(4){grid-area:2/2}
+      .collage-item:nth-child(5){grid-area:3/1}
+      .collage-item:nth-child(6){grid-area:3/2}
+      .collage-item:nth-child(7){grid-area:4/1/auto/3}
+    }
+
+    /* TIMELINE */
+    .timeline-section{padding:40px 20px 80px;position:relative}
+    .timeline-container{max-width:700px;margin:0 auto;position:relative}
+    .timeline-line{background:linear-gradient(180deg,transparent,var(--gold),var(--gold),transparent);width:2px;position:absolute;top:0;bottom:0;left:50%;transform:translate(-50%)}
+    .timeline-item{align-items:center;margin-bottom:40px;display:flex;position:relative}
+    .timeline-item:nth-child(odd){flex-direction:row-reverse}
+    .timeline-content{background:#1a1510cc;border:1px solid #c9a84c4d;border-radius:4px;width:42%;padding:18px;transition:transform .3s,border-color .3s}
+    .timeline-content:hover{border-color:var(--gold);transform:scale(1.02)}
+    .timeline-dot{background:radial-gradient(circle,var(--gold) 0%,#8b6914 100%);border:3px solid var(--black);z-index:2;border-radius:50%;justify-content:center;align-items:center;width:50px;height:50px;display:flex;position:absolute;left:50%;transform:translate(-50%);box-shadow:0 0 15px #c9a84c66}
+    .timeline-year{color:var(--black);font-family:'Cinzel',serif;font-size:14px;font-weight:700}
+    .timeline-title{color:var(--gold);margin-bottom:5px;font-family:'Dancing Script',cursive;font-size:max(18px,min(3vw,24px))}
+    .timeline-description{color:#f5ead0b3;font-family:'Cormorant Garamond',serif;font-size:max(12px,min(2vw,14px));font-style:italic}
+    @media (max-width:768px){
+      .timeline-line{left:25px}
+      .timeline-item,.timeline-item:nth-child(odd){flex-direction:row;padding-left:70px}
+      .timeline-content{width:100%}
+      .timeline-dot{width:40px;height:40px;left:25px}
+      .timeline-year{font-size:12px}
+    }
+
+    /* INVITATION */
+    .invitation-section{justify-content:center;padding:80px 20px;display:flex}
+    .invitation-card{text-align:center;background:#1a1510f2;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:750px;min-height:500px;padding:60px 50px;display:flex;position:relative}
+    .invitation-card::before,.invitation-card::after{content:"";border-color:var(--gold);border-style:solid;width:40px;height:40px;position:absolute}
+    .invitation-card::before{border-width:2px 0 0 2px;top:20px;left:20px}
+    .invitation-card::after{border-width:0 2px 2px 0;bottom:20px;right:20px}
+    .invitation-monogram{color:var(--gold);letter-spacing:8px;margin-bottom:10px;font-family:'Cinzel',serif;font-size:max(36px,min(6vw,48px))}
+    .invitation-tagline{color:var(--cream);letter-spacing:4px;margin-bottom:30px;font-family:'Cinzel',serif;font-size:max(11px,min(2vw,14px))}
+    .invitation-divider{background:var(--gold);width:80px;height:1px;margin:0 auto 30px}
+    .invitation-divider-large{background:var(--gold);width:150px;height:1px;margin:30px auto}
+    .invitation-body{color:var(--cream);max-width:550px;font-family:'Cormorant Garamond',serif;font-size:max(18px,min(3.5vw,24px));font-style:italic;line-height:1.9}
+    .invitation-family{color:var(--gold);font-family:'Cinzel',serif;font-size:max(22px,min(4vw,32px));font-style:normal;font-weight:600}
+    .invitation-names{color:var(--gold-light);margin:15px 0;font-family:'Cinzel',serif;font-size:max(26px,min(5vw,38px));font-style:normal;font-weight:500;display:block}
+    .invitation-years{color:var(--gold);font-family:'Cinzel',serif;font-size:max(28px,min(5vw,40px));font-style:normal;font-weight:700}
+    .invitation-blessing{color:var(--gold-light);margin:30px 0;font-family:'Cormorant Garamond',serif;font-size:max(24px,min(4.5vw,34px));font-style:italic;line-height:1.4}
+    .invitation-signature{color:var(--gold);margin-top:20px;font-family:'Dancing Script',cursive;font-size:max(26px,min(5vw,38px))}
+
+    /* VENUE */
+    .venue-section{justify-content:center;padding:80px 20px;display:flex}
+    .venue-card{text-align:center;background:#1a1510f2;flex-direction:column;justify-content:center;align-items:center;width:100%;max-width:600px;min-height:450px;padding:60px 50px;display:flex;position:relative}
+    .venue-card::before,.venue-card::after{content:"";border-color:var(--gold);border-style:solid;width:40px;height:40px;position:absolute}
+    .venue-card::before{border-width:2px 0 0 2px;top:20px;left:20px}
+    .venue-card::after{border-width:0 2px 2px 0;bottom:20px;right:20px}
+    .venue-pin{flex-direction:column;align-items:center;margin-bottom:15px;display:flex}
+    .venue-pin-head{background:#e53935;border-radius:50%;width:16px;height:16px}
+    .venue-pin-stem{background:var(--cream);width:3px;height:25px}
+    .venue-label{color:var(--gold);letter-spacing:6px;margin-bottom:15px;font-family:'Cinzel',serif;font-size:max(14px,min(2.5vw,18px))}
+    .venue-name{color:var(--cream);margin-bottom:10px;font-family:'Cinzel',serif;font-size:max(28px,min(6vw,46px));font-weight:600}
+    .venue-location{color:#f5ead0b3;margin-bottom:30px;font-family:'Cormorant Garamond',serif;font-size:max(16px,min(3vw,22px));font-style:italic}
+    .venue-divider{background:var(--gold);width:60px;height:1px;margin:0 auto 30px}
+    .venue-datetime-label{color:var(--gold);letter-spacing:4px;margin-bottom:15px;font-family:'Cinzel',serif;font-size:max(14px,min(2.5vw,18px))}
+    .venue-date{color:var(--cream);margin-bottom:8px;font-family:'Cormorant Garamond',serif;font-size:max(26px,min(5vw,36px))}
+    .venue-time{color:var(--gold-light);margin-bottom:35px;font-family:'Cormorant Garamond',serif;font-size:max(18px,min(3.5vw,24px));font-style:italic}
+    .venue-button{border:1px solid var(--gold);color:var(--gold);letter-spacing:3px;cursor:pointer;background:0 0;padding:16px 35px;font-family:'Cinzel',serif;font-size:13px;text-decoration:none;transition:background .3s,color .3s;display:inline-block}
+    .venue-button:hover{background:var(--gold);color:var(--black)}
+
+    /* FOOTER */
+    .footer{text-align:center;border-top:1px solid #c9a84c33;padding:60px 20px}
+    .footer-ornament{justify-content:center;align-items:center;gap:15px;margin-bottom:30px;display:flex}
+    .footer-ornament-line{background:var(--gold);width:50px;height:1px}
+    .footer-ornament-diamond{color:var(--gold);font-size:10px}
+    .footer-names{color:var(--gold);margin-bottom:15px;font-family:'Dancing Script',cursive;font-size:max(36px,min(8vw,50px))}
+    .footer-info{color:var(--cream);letter-spacing:3px;margin-bottom:10px;font-family:'Cinzel',serif;font-size:max(10px,min(1.5vw,12px))}
+    .footer-tagline{color:#f5ead080;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic}
+
+    /* MUSIC PLAYER */
+    .music-player{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);z-index:1000;background:#1a1510e6;border:1px solid #c9a84c4d;border-radius:50px;align-items:center;gap:12px;padding:12px 18px;transition:transform .5s;display:flex;position:fixed;bottom:20px;right:20px;transform:translateY(100px)}
+    .music-player.visible{transform:translateY(0)}
+    .music-toggle{border:1px solid var(--gold);width:36px;height:36px;color:var(--gold);cursor:pointer;background:0 0;border-radius:50%;justify-content:center;align-items:center;transition:background .3s,color .3s;display:flex;font-size:14px}
+    .music-toggle:hover{background:var(--gold);color:var(--black)}
+    .music-info{flex-direction:column;display:flex}
+    .music-title{color:var(--cream);letter-spacing:1px;font-family:'Cinzel',serif;font-size:11px}
+    .music-artist{color:#f5ead099;font-family:'Cormorant Garamond',serif;font-size:10px}
+    .music-waves{align-items:flex-end;gap:2px;height:20px;display:flex}
+    .music-wave-bar{background:var(--gold);border-radius:2px;width:3px;animation:1s infinite wave}
+    .music-wave-bar:first-child{height:8px;animation-delay:0s}
+    .music-wave-bar:nth-child(2){height:14px;animation-delay:.1s}
+    .music-wave-bar:nth-child(3){height:10px;animation-delay:.2s}
+    .music-wave-bar:nth-child(4){height:16px;animation-delay:.3s}
+    .music-wave-bar:nth-child(5){height:12px;animation-delay:.4s}
+    .music-waves.paused .music-wave-bar{animation-play-state:paused}
+    @keyframes wave{0%,to{transform:scaleY(1)}50%{transform:scaleY(.5)}}
+    @media (max-width:480px){.music-player{padding:10px 14px;bottom:10px;right:10px}.music-info{display:none}}
+  </style>
+</head>
+<body>
+
+  <audio id="bgAudio" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ytmp3gg-youtube-kudmayi-film-version-8k-video-rocky-aur-media-4vfw1dzxqds-009_fQ6xiAoV-MbSJ2iU34VhfMYRaa7hxuLI4IDhtjV.mp3" loop></audio>
+
+  <!-- LOADER -->
+  <div class="loader" id="loader">
+    <div class="loader-number">25</div>
+    <div class="loader-text">SILVER JUBILEE</div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+
+  <!-- ENVELOPE SCREEN -->
+  <div class="envelope-screen" id="envelopeScreen">
+    <div class="envelope" id="envelope">
+      <div class="envelope-body"></div>
+      <div class="envelope-bottom"></div>
+      <div class="envelope-flap"></div>
+      <div class="envelope-seal">
+        <div class="seal-number">25</div>
+        <div class="seal-text">A&nbsp;&amp;&nbsp;V</div>
+      </div>
+      <div class="envelope-letter">
+        <div class="letter-names">Anjali &amp; Vikas</div>
+        <div class="letter-subtitle">Silver Jubilee Celebration</div>
+        <div class="letter-date">05th May, 2026</div>
+      </div>
+    </div>
+    <div class="envelope-hint">Tap to open ✦</div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content" id="mainContent">
+    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <div class="scroll-arrow hidden" id="scrollArrow">
+      <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="20" stroke="#c9a84c" stroke-width="2"/>
+        <path d="M14 18L22 26L30 18" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-label scroll-reveal">BAGLA FAMILY INVITES YOU</div>
+      <div class="hero-names">
+        <div class="hero-name">Anjali</div>
+        <div class="hero-ampersand">&amp;</div>
+        <div class="hero-name">Vikas</div>
+      </div>
+      <div class="hero-subtitle scroll-reveal">Silver Jubilee Celebration</div>
+      <div class="hero-divider scroll-reveal">
+        <div class="hero-divider-line"></div>
+        <span class="hero-divider-diamond">✦</span>
+        <div class="hero-divider-line"></div>
+      </div>
+      <div class="hero-date scroll-reveal">05TH MAY · 2026 · 6 PM ONWARDS</div>
+      <div class="hero-tagline scroll-reveal">25 Years of Love, Laughter and a lifetime of beautiful memories</div>
+    </section>
+
+    <!-- COUNTDOWN -->
+    <section class="countdown-section scroll-reveal">
+      <div class="section-heading">
+        <div class="section-heading-text">COUNTING EVERY MOMENT</div>
+      </div>
+      <div class="countdown-watermark">25</div>
+      <div class="countdown-container">
+        <div class="countdown-item">
+          <div class="countdown-number" id="cd-days">00</div>
+          <div class="countdown-label">DAYS</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-number" id="cd-hours">00</div>
+          <div class="countdown-label">HOURS</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-number" id="cd-mins">00</div>
+          <div class="countdown-label">MINUTES</div>
+        </div>
+        <div class="countdown-item">
+          <div class="countdown-number" id="cd-secs">00</div>
+          <div class="countdown-label">SECONDS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLLAGE -->
+    <section class="collage-section scroll-reveal">
+      <div class="section-heading">
+        <div class="section-heading-text">MOMENTS FROZEN IN GOLD</div>
+      </div>
+      <div class="collage-grid" id="collageGrid">
+        <!-- Photos go here; placeholders shown until photos are added -->
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="timeline-section">
+      <div class="section-heading scroll-reveal">
+        <div class="section-heading-large">A Quarter Century of Love</div>
+      </div>
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:0ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Our Beautiful Beginning</div>
+            <div class="timeline-description">Anjali &amp; Vikas tied the knot</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2001</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:80ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Harsh Born</div>
+            <div class="timeline-description">Our first bundle of joy arrived</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2002</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:160ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Akshat Born</div>
+            <div class="timeline-description">Another blessing joined our journey</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2004</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:240ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Five Years Together</div>
+            <div class="timeline-description">Celebrating half a decade of love</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2006</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:320ms">
+          <div class="timeline-content">
+            <div class="timeline-title">A Decade of Love</div>
+            <div class="timeline-description">Ten years, countless memories</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2011</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:400ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Fifteen Glorious Years</div>
+            <div class="timeline-description">Silver dreams on the horizon</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2016</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:480ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Two Decades Strong</div>
+            <div class="timeline-description">Through every season, together</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2020</span></div>
+        </div>
+
+        <div class="timeline-item scroll-reveal" style="transition-delay:560ms">
+          <div class="timeline-content">
+            <div class="timeline-title">Silver Jubilee</div>
+            <div class="timeline-description">25 glorious years together</div>
+          </div>
+          <div class="timeline-dot"><span class="timeline-year">2026</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVITATION CARD -->
+    <section class="invitation-section">
+      <div class="invitation-card scroll-reveal">
+        <div class="invitation-monogram">A &amp; V</div>
+        <div class="invitation-tagline">SILVER JUBILEE · 05 MAY 2026</div>
+        <div class="invitation-divider"></div>
+        <div class="invitation-body">
+          <span class="invitation-family">Bagla Family</span> invites you to the Silver Jubilee celebration of
+          <span class="invitation-names">Anjali &amp; Vikas.</span>
+          Twenty-five years ago, two souls came together and wrote the most beautiful story. Join us as we celebrate <span class="invitation-years">25 glorious years</span> of love, togetherness &amp; endless joy.
+        </div>
+        <div class="invitation-blessing">Your Presence Will Be Our Blessing</div>
+        <div class="invitation-divider-large"></div>
+        <div class="invitation-signature">With Love, Bagla Family</div>
+      </div>
+    </section>
+
+    <!-- VENUE -->
+    <section class="venue-section">
+      <div class="venue-card scroll-reveal">
+        <div class="venue-pin">
+          <div class="venue-pin-head"></div>
+          <div class="venue-pin-stem"></div>
+        </div>
+        <div class="venue-label">VENUE</div>
+        <div class="venue-name">BPTP Parkland Pride</div>
+        <div class="venue-location">Block A, Sector 77</div>
+        <div class="venue-divider"></div>
+        <div class="venue-datetime-label">DATE &amp; TIME</div>
+        <div class="venue-date">05th May, 2026</div>
+        <div class="venue-time">6:00 PM Onwards</div>
+        <a href="https://maps.google.com/?q=BPTP+Parkland+Pride+Sector+77" target="_blank" rel="noopener noreferrer" class="venue-button">OPEN IN GOOGLE MAPS</a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-ornament">
+        <div class="footer-ornament-line"></div>
+        <span class="footer-ornament-diamond">✦</span>
+        <div class="footer-ornament-line"></div>
+      </div>
+      <div class="footer-names">Anjali &amp; Vikas</div>
+      <div class="footer-info">BAGLA FAMILY · SILVER JUBILEE · 05 MAY 2026</div>
+      <div class="footer-tagline">25 Years · Celebrating Love</div>
+    </footer>
+  </div>
+
+  <!-- MUSIC PLAYER -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-toggle" id="musicToggle">▶</button>
+    <div class="music-info">
+      <span class="music-title">KUDMAYI</span>
+      <span class="music-artist">Rocky Aur Rani</span>
+    </div>
+    <div class="music-waves paused" id="musicWaves">
+      <div class="music-wave-bar"></div>
+      <div class="music-wave-bar"></div>
+      <div class="music-wave-bar"></div>
+      <div class="music-wave-bar"></div>
+      <div class="music-wave-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    // ── LOADER ──
+    const loader       = document.getElementById('loader');
+    const envelopeScr  = document.getElementById('envelopeScreen');
+    const mainContent  = document.getElementById('mainContent');
+    const envelope     = document.getElementById('envelope');
+    const musicPlayer  = document.getElementById('musicPlayer');
+    const audio        = document.getElementById('bgAudio');
+    const musicToggle  = document.getElementById('musicToggle');
+    const musicWaves   = document.getElementById('musicWaves');
+    const scrollArrow  = document.getElementById('scrollArrow');
+
+    // Hide loader after 2.4s (matches loadProgress animation)
+    setTimeout(() => {
+      loader.classList.add('hidden');
+      setTimeout(() => envelopeScr.style.display = 'flex', 800);
+    }, 2400);
+
+    // ── ENVELOPE CLICK ──
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('open');
+      setTimeout(() => {
+        envelopeScr.classList.add('hidden');
+        mainContent.classList.add('visible');
+        musicPlayer.classList.add('visible');
+        audio.play().catch(() => {});
+        musicToggle.textContent = '❚❚';
+        musicWaves.classList.remove('paused');
+        initAfterReveal();
+      }, 1200);
+    });
+
+    // ── CURSOR ──
+    const cursorDot  = document.getElementById('cursorDot');
+    const cursorRing = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursorDot.style.left = mx + 'px';
+      cursorDot.style.top  = my + 'px';
+    });
+    (function animRing() {
+      rx += (mx - rx) * 0.15;
+      ry += (my - ry) * 0.15;
+      cursorRing.style.left = rx + 'px';
+      cursorRing.style.top  = ry + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    function initAfterReveal() {
+      // ── PARTICLES ──
+      const canvas = document.getElementById('particlesCanvas');
+      const ctx    = canvas.getContext('2d');
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const particles = [];
+      for (let i = 0; i < 55; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 2 + 1,
+          speedY: Math.random() * 0.5 + 0.2,
+          opacity: Math.random(),
+          twinkle: Math.random() * 0.02
+        });
+      }
+      (function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.y -= p.speedY;
+          p.opacity += 0.02 * Math.sin(Date.now() * p.twinkle);
+          if (p.y < 0) p.y = canvas.height;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, 2 * Math.PI);
+          ctx.fillStyle = `rgba(201,168,76,${Math.max(0.1, Math.min(0.8, p.opacity))})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(drawParticles);
+      })();
+      window.addEventListener('resize', () => {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      // ── SCROLL ARROW ──
+      const checkScroll = () => scrollArrow.classList.toggle('hidden', window.scrollY >= 80);
+      checkScroll();
+      window.addEventListener('scroll', checkScroll);
+      scrollArrow.addEventListener('click', () => window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' }));
+
+      // ── SCROLL REVEAL ──
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('revealed'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    }
+
+    // ── COUNTDOWN ──
+    const target = new Date('2026-05-05T18:00:00').getTime();
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function tick() {
+      const diff = target - Date.now();
+      if (diff <= 0) {
+        ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+      }
+      document.getElementById('cd-days').textContent  = pad(Math.floor(diff / 86400000));
+      document.getElementById('cd-hours').textContent = pad(Math.floor((diff % 86400000) / 3600000));
+      document.getElementById('cd-mins').textContent  = pad(Math.floor((diff % 3600000) / 60000));
+      document.getElementById('cd-secs').textContent  = pad(Math.floor((diff % 60000) / 1000));
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // ── MUSIC TOGGLE ──
+    musicToggle.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        musicToggle.textContent = '❚❚';
+        musicWaves.classList.remove('paused');
+      } else {
+        audio.pause();
+        musicToggle.textContent = '▶';
+        musicWaves.classList.add('paused');
+      }
+    });
+
+    // ── GALLERY PLACEHOLDERS ──
+    // To add photos: place image files in static/images/ and list filenames below
+    const photos = [
+      // 'photo1.jpg', 'photo2.jpg', 'photo3.jpg', 'photo4.jpg', 'photo5.jpg', 'photo6.jpg', 'photo7.jpg'
+    ];
+    const grid = document.getElementById('collageGrid');
+    const count = photos.length > 0 ? photos.length : 7;
+    for (let i = 0; i < count; i++) {
+      const div = document.createElement('div');
+      div.className = 'collage-item';
+      if (photos[i]) {
+        div.innerHTML = `<img src="/static/images/${photos[i]}" alt="Memory ${i+1}" />`;
+      } else {
+        div.innerHTML = `<div class="collage-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>ADD PHOTO</span>
+        </div>`;
+      }
+      grid.appendChild(div);
+    }
+  </script>
+</body>
+</html>
