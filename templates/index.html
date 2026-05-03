@@ -95,6 +95,7 @@
     .collage-grid{grid-template-rows:280px 280px;grid-template-columns:repeat(4,1fr);gap:0;display:grid}
     .collage-item{position:relative;overflow:hidden;background:#1a1510}
     .collage-item img{object-fit:cover;width:100%;height:100%;transition:transform .5s}
+    .collage-item:nth-child(2) img{object-position:top}
     .collage-item:hover img{transform:scale(1.06)}
     .collage-item:first-child{grid-area:1/1/3}
     .collage-item:nth-child(2){grid-area:1/2}
